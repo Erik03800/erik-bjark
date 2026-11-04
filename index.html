@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>QR-Code Generator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root {
+    --bg: #f4f1ea;
+    --card: #ffffff;
+    --ink: #1c1c22;
+    --muted: #767b85;
+    --accent: #2b2b33;
+    --border: #e2ddd2;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+  }
+  .card {
+    width: 100%;
+    max-width: 420px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  }
+  h1 {
+    font-size: 1.3rem;
+    margin: 0 0 4px;
+  }
+  .sub {
+    color: var(--muted);
+    font-size: 0.88rem;
+    margin: 0 0 22px;
+  }
+  label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 6px;
+  }
+  input[type=text] {
+    width: 100%;
+    padding: 11px 13px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    outline: none;
+    margin-bottom: 16px;
+  }
+  input[type=text]:focus { border-color: var(--accent); }
+
+  .row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .row > div { flex: 1; }
+  select {
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    background: white;
+  }
+
+  button {
+    width: 100%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+  button:hover { opacity: 0.9; }
+  button.secondary {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--ink);
+    margin-top: 10px;
+  }
+
+  #qrArea {
+    display: flex;
+    justify-content: center;
+    margin: 24px 0 6px;
+    min-height: 180px;
+    align-items: center;
+  }
+  #qrArea img, #qrArea canvas, #qrArea table {
+    border-radius: 6px;
+  }
+  .placeholder {
+    color: var(--muted);
+    font-size: 0.85rem;
+    text-align: center;
+  }
+
+  .wrap { display: flex; flex-direction: column; gap: 18px; width: 100%; max-width: 420px; }
+
+  .facts {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  }
+  .facts h2 {
+    font-size: 1rem;
+    margin: 0 0 4px;
+  }
+  .facts .sub { margin-bottom: 16px; }
+  .fact-box {
+    background: #faf8f2;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    min-height: 78px;
+    display: flex;
+    align-items: center;
+  }
+  .fact-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+  }
+  .fact-nav button {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--ink);
+    width: auto;
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .fact-nav .count {
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<div class="card">
+  <h1>QR-Code Generator</h1>
+  <p class="sub">Text oder Link eingeben, QR-Code wird sofort erzeugt.</p>
+
+  <label for="text">Text oder URL</label>
+  <input type="text" id="text" placeholder="https://beispiel.de" value="">
+
+  <div class="row">
+    <div>
+      <label for="size">Größe</label>
+      <select id="size">
+        <option value="180">Klein (180px)</option>
+        <option value="260" selected>Mittel (260px)</option>
+        <option value="360">Groß (360px)</option>
+      </select>
+    </div>
+    <div>
+      <label for="color">Farbe</label>
+      <select id="color">
+        <option value="#000000" selected>Schwarz</option>
+        <option value="#2b2b33">Anthrazit</option>
+        <option value="#1c3f5e">Blau</option>
+        <option value="#7a1f3d">Bordeaux</option>
+      </select>
+    </div>
+  </div>
+
+  <button id="genBtn">QR-Code erzeugen</button>
+
+  <div id="qrArea"><span class="placeholder">Dein QR-Code erscheint hier</span></div>
+
+  <button id="downloadBtn" class="secondary" style="display:none;">Als PNG herunterladen</button>
+</div>
+
+<div class="facts">
+  <h2>🔎 Wusstest du schon?</h2>
+  <p class="sub" style="color:var(--muted); font-size:0.85rem; margin:0 0 16px;">Ein paar Fakten über den QR-Code</p>
+  <div class="fact-box" id="factBox"></div>
+  <div class="fact-nav">
+    <button id="prevFact">← Zurück</button>
+    <span class="count" id="factCount"></span>
+    <button id="nextFact">Weiter →</button>
+  </div>
+</div>
+</div>
+
+<script>
+  const FACTS = [
+    "Der QR-Code wurde 1994 vom japanischen Ingenieur Masahiro Hara bei der Firma Denso Wave erfunden – ursprünglich, um Autoteile in der Fertigung schneller zu erfassen als mit klassischen Strichcodes.",
+    "'QR' steht für 'Quick Response' (schnelle Antwort), weil der Code in jede Richtung – nicht nur horizontal wie ein Strichcode – blitzschnell ausgelesen werden kann.",
+    "Ein einzelner QR-Code kann je nach Version bis zu 7.089 Ziffern oder rund 4.296 Buchstaben und Zeichen speichern.",
+    "Dank eingebauter Fehlerkorrektur bleibt ein QR-Code auch lesbar, wenn bis zu etwa 30 % der Fläche beschädigt, verschmutzt oder überklebt sind.",
+    "Die drei großen Quadrate in den Ecken eines QR-Codes dienen nicht der Datenspeicherung, sondern helfen dem Scanner, den Code aus jedem Winkel und jeder Drehung korrekt zu erkennen.",
+    "Der größte je aus Getreide angelegte QR-Code der Welt bedeckte laut Guinness-Weltrekord rund 900 Quadratmeter und wurde 2018 auf einem Reisfeld in Harbin, China, angelegt.",
+    "2019 formten in China 3.029 Menschen mit ihren Körpern gemeinsam einen riesigen, tatsächlich scannbaren QR-Code – ein Guinness-Weltrekord für das größte 'menschliche' QR-Code-Bild.",
+    "Denso Wave hat das Patent für den QR-Code bewusst nicht durchgesetzt und die Technologie offen zugänglich gemacht – deshalb ist sie heute weltweit kostenlos nutzbar.",
+    "QR-Codes gibt es in verschiedenen 'Versionen' von 1 bis 40 – je höher die Version, desto mehr kleine Module (Pixel) und desto mehr Daten passen hinein.",
+    "Während der Corona-Pandemie erlebten QR-Codes einen enormen Boom, weil Restaurants sie für digitale Speisekarten und Kontaktnachverfolgung nutzten."
+  ];
+
+  let factIndex = 0;
+  const factBox = document.getElementById('factBox');
+  const factCount = document.getElementById('factCount');
+
+  function zeigeFakt() {
+    factBox.textContent = FACTS[factIndex];
+    factCount.textContent = (factIndex + 1) + ' / ' + FACTS.length;
+  }
+  document.getElementById('nextFact').addEventListener('click', () => {
+    factIndex = (factIndex + 1) % FACTS.length;
+    zeigeFakt();
+  });
+  document.getElementById('prevFact').addEventListener('click', () => {
+    factIndex = (factIndex - 1 + FACTS.length) % FACTS.length;
+    zeigeFakt();
+  });
+  zeigeFakt();
+</script>
+
+<script>
+  let qrInstance = null;
+  const qrArea = document.getElementById('qrArea');
+  const downloadBtn = document.getElementById('downloadBtn');
+
+  function erzeugen() {
+    const text = document.getElementById('text').value.trim();
+    const size = parseInt(document.getElementById('size').value, 10);
+    const color = document.getElementById('color').value;
+
+    if (!text) {
+      qrArea.innerHTML = '<span class="placeholder">Bitte Text oder Link eingeben</span>';
+      downloadBtn.style.display = 'none';
+      return;
+    }
+
+    qrArea.innerHTML = '';
+    qrInstance = new QRCode(qrArea, {
+      text: text,
+      width: size,
+      height: size,
+      colorDark: color,
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+
+    downloadBtn.style.display = 'block';
+  }
+
+  document.getElementById('genBtn').addEventListener('click', erzeugen);
+  document.getElementById('text').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') erzeugen();
+  });
+
+  downloadBtn.addEventListener('click', () => {
+    // qrcodejs erzeugt entweder ein <canvas> oder eine <img>, je nach Browser
+    const canvas = qrArea.querySelector('canvas');
+    const img = qrArea.querySelector('img');
+    const a = document.createElement('a');
+    a.download = 'qrcode.png';
+    if (canvas) {
+      a.href = canvas.toDataURL('image/png');
+    } else if (img) {
+      a.href = img.src;
+    } else {
+      return;
+    }
+    a.click();
+  });
+
+  erzeugen();
+</script>
+</body>
+</html>
